@@ -36,7 +36,6 @@ class NetworkRotator @Inject constructor(private val ctx: Context) {
             toggleMobileData(enable)
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-
                     val settingsIntent = Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
