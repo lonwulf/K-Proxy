@@ -1,4 +1,4 @@
-package com.lonwulf.iproxyclone.ui.theme
+package com.lonwulf.kproxy.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

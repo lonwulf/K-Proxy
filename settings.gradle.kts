@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Iproxy clone"
+rootProject.name = "K-Proxy"
 include(":app")
  

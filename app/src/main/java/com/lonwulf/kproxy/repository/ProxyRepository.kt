@@ -1,28 +1,31 @@
-package com.lonwulf.iproxyclone.repository
+package com.lonwulf.kproxy.repository
 
 import android.content.Context
 import android.content.Intent
 import android.net.VpnService
-import com.lonwulf.iproxyclone.ProxyConfiguration
-import com.lonwulf.iproxyclone.ProxyType
-import com.lonwulf.iproxyclone.service.ProxyVpnService
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.lonwulf.kproxy.ProxyConfiguration
+import com.lonwulf.kproxy.ProxyType
+import com.lonwulf.kproxy.domain.model.SpeedTestResult
+import com.lonwulf.kproxy.service.ProxyVpnService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: Context) {
+class ProxyRepository @Inject constructor(private val ctx: Context) {
 
     private var proxyClient: OkHttpClient? = null
     private var currentConfig: ProxyConfiguration? = null
 
     companion object {
         private const val CONNECTION_TIMEOUT = 30L
+        private const val BUFFER_SIZE = 8192
         private const val IP_CHECK_URL = "https://api.ipify.org?format=json"
         private const val SPEED_TEST_URL =
             "https://speed.cloudflare.com/__down?bytes=25000000" // 25MB file for speed test
@@ -64,6 +67,12 @@ class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: C
             .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+            })
+
+        addCertificatePinningIfNeeded(builder, proxyConfiguration)
 
         // Add authentication if credentials are provided
         proxyConfiguration.username?.let { username ->
@@ -79,6 +88,19 @@ class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: C
             }
         }
         proxyClient = builder.build()
+    }
+
+    private fun addCertificatePinningIfNeeded(
+        builder: OkHttpClient.Builder,
+        config: ProxyConfiguration
+    ) {
+        config.certificateFingerprint?.let { fingerprint ->
+            builder.certificatePinner(
+                CertificatePinner.Builder()
+                    .add(config.host, "sha256/$fingerprint")
+                    .build()
+            )
+        }
     }
 
     private fun testConnection() {
@@ -104,7 +126,7 @@ class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: C
             val serviceIntent = Intent(ctx, ProxyVpnService::class.java).apply {
                 putExtra("host", proxyConfiguration.host)
                 putExtra("port", proxyConfiguration.port)
-                putExtra("type", proxyConfiguration.proxyType.name)
+                putExtra("proxyType", proxyConfiguration.proxyType.name)
                 proxyConfiguration.username?.let { putExtra("username", it) }
                 proxyConfiguration.password?.let { putExtra("password", it) }
             }
@@ -146,7 +168,7 @@ class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: C
                 }
 
                 response.body?.let { body ->
-                    val buffer = ByteArray(8192)
+                    val buffer = ByteArray(BUFFER_SIZE)
                     var bytes: Int
 
                     while (body.source().read(buffer).also { bytes = it } != -1) {
@@ -197,8 +219,3 @@ class ProxyRepository @Inject constructor(@ApplicationContext private val ctx: C
     fun getCurrentConfig(): ProxyConfiguration? = currentConfig
 }
 
-data class SpeedTestResult(
-    val bytesTransferred: Long,
-    val durationSeconds: Double,
-    val speedMbps: Double
-)

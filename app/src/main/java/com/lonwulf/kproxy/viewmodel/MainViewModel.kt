@@ -1,11 +1,11 @@
-package com.lonwulf.iproxyclone.viewmodel
+package com.lonwulf.kproxy.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lonwulf.iproxyclone.NetworkRotator
-import com.lonwulf.iproxyclone.ProxyConfiguration
-import com.lonwulf.iproxyclone.repository.ProxyRepository
+import com.lonwulf.kproxy.NetworkRotator
+import com.lonwulf.kproxy.ProxyConfiguration
+import com.lonwulf.kproxy.repository.ProxyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +19,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
-    private val connectionState
+    val connectionState
         get() = _connectionState.asStateFlow()
     private val _currentIp = MutableStateFlow<String?>(null)
     val currentIp
@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(
             _connectionState.value = ConnectionState.Connected
             // Check connection speed
             val speed = proxyRepository.measureSpeed()
-            Log.d("Proxy", "Connection speed: ${speed.speedMbps} Mbps")
+            Log.d("Proxy", "Connection speed: ${speed.speedMbps} Mb/s")
         } catch (e: Exception) {
             _connectionState.value = ConnectionState.Error(e.message ?: "IP rotation failed")
         }

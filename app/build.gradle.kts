@@ -2,15 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
     kotlin("kapt")
 }
 
 android {
-    namespace = "com.lonwulf.iproxyclone"
+    namespace = "com.lonwulf.kproxy"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lonwulf.iproxyclone"
+        applicationId = "com.lonwulf.kproxy"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -20,11 +21,17 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+        getByName("debug") {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -37,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -51,13 +59,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.compiler.android)
+    kapt(libs.hilt.compiler)
     implementation(libs.okhttp)
-    implementation(libs.webkit)
+    implementation(libs.logging.interceptor)
     implementation(libs.compose.viewmodel)
-    implementation(libs.constraint.layout)
-    implementation(libs.go.ethereum)
-    implementation(libs.bouncy.castle)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

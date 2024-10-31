@@ -1,4 +1,4 @@
-package com.lonwulf.iproxyclone
+package com.lonwulf.kproxy
 
 import android.os.ParcelFileDescriptor
 import java.io.FileInputStream
