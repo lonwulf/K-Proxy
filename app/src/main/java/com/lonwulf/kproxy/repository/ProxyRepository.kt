@@ -191,9 +191,7 @@ class ProxyRepository @Inject constructor(private val ctx: Context) {
     suspend fun disconnect() = withContext(Dispatchers.IO) {
         try {
             ctx.stopService(Intent(ctx, ProxyVpnService::class.java))
-
             currentConfig = null
-
             proxyClient?.dispatcher?.executorService?.shutdown()
             proxyClient?.connectionPool?.evictAll()
             proxyClient = null

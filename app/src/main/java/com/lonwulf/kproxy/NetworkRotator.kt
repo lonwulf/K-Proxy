@@ -17,8 +17,12 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class NetworkRotator @Inject constructor(private val ctx: Context) {
-    private val cM = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val wifiManager = ctx.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private val cM by lazy {
+        ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+    private val wifiManager by lazy {
+        ctx.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    }
 
     suspend fun rotateIP() {
         try {
