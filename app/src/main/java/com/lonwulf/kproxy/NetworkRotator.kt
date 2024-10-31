@@ -59,7 +59,7 @@ class NetworkRotator @Inject constructor(private val ctx: Context) {
                     Manifest.permission.CHANGE_NETWORK_STATE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                Timber.w("Missing MODIFY_PHONE_STATE permission")
+                Timber.w("Missing permission")
                 return
             }
             val request = NetworkRequest.Builder()
