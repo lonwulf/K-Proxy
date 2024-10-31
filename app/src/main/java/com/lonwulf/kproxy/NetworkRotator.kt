@@ -27,6 +27,7 @@ class NetworkRotator @Inject constructor(private val ctx: Context) {
             throw SecurityException("")
         }
     }
+
     private fun toggleConnection(enable: Boolean) {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
