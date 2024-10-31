@@ -22,6 +22,8 @@ class ProxyRepository @Inject constructor(private val ctx: Context) {
 
     private var proxyClient: OkHttpClient? = null
     private var currentConfig: ProxyConfiguration? = null
+    val getCurrentConfig
+        get() = currentConfig
 
     companion object {
         private const val CONNECTION_TIMEOUT = 30L
@@ -34,13 +36,9 @@ class ProxyRepository @Inject constructor(private val ctx: Context) {
     suspend fun connect(config: ProxyConfiguration) {
         withContext(Dispatchers.IO) {
             try {
-                // Store current configuration
                 currentConfig = config
-                // Set up proxy client
                 setupProxyClient(config)
-                // Test connection
                 testConnection()
-                // Start VPN service
                 startVpnService(config)
 
             } catch (e: Exception) {
@@ -192,13 +190,10 @@ class ProxyRepository @Inject constructor(private val ctx: Context) {
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
         try {
-            // Stop VPN service
             ctx.stopService(Intent(ctx, ProxyVpnService::class.java))
 
-            // Clear current configuration
             currentConfig = null
 
-            // Close proxy client
             proxyClient?.dispatcher?.executorService?.shutdown()
             proxyClient?.connectionPool?.evictAll()
             proxyClient = null
@@ -215,7 +210,5 @@ class ProxyRepository @Inject constructor(private val ctx: Context) {
             false
         }
     }
-
-    fun getCurrentConfig(): ProxyConfiguration? = currentConfig
 }
 

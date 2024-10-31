@@ -61,7 +61,6 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.compiler.android)
-    kapt(libs.hilt.compiler)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.compose.viewmodel)

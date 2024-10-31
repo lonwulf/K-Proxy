@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,7 +34,7 @@ class MainViewModel @Inject constructor(
             _connectionState.value = ConnectionState.Connected
             // Check connection speed
             val speed = proxyRepository.measureSpeed()
-            Log.d("Proxy", "Connection speed: ${speed.speedMbps} Mb/s")
+            Timber.d("Proxy".plus("Connection speed: ${speed.speedMbps} Mb/s"))
         } catch (e: Exception) {
             _connectionState.value = ConnectionState.Error(e.message ?: "IP rotation failed")
         }
