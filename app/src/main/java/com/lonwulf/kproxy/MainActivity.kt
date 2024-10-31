@@ -1,7 +1,6 @@
 package com.lonwulf.kproxy
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,7 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.lonwulf.kproxy.ui.screens.MainScreen
-import com.lonwulf.kproxy.ui.theme.IproxyCloneTheme
+import com.lonwulf.kproxy.ui.theme.KProxyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            IproxyCloneTheme {
+            KProxyTheme {
                 val snackBarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
                 Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) },
