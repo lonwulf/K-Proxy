@@ -27,7 +27,7 @@ class NetworkRotator @Inject constructor(private val ctx: Context) {
             toggleConnection(true)
             delay(2000)
         } catch (ex: Exception) {
-            throw SecurityException("")
+            throw Exception(ex)
         }
     }
 

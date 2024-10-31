@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -19,11 +20,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.lonwulf.kproxy.ui.screens.MainScreen
 import com.lonwulf.kproxy.ui.theme.IproxyCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,22 +36,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             IproxyCloneTheme {
                 val snackBarHostState = remember { SnackbarHostState() }
-
+                val scope = rememberCoroutineScope()
                 Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) },
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-//                        if (showAppBars) {
-                        BottomNavigation(
-//                                navHostController = navController,
-//                                currentDestination = currentDestination
-                        )
-//                        }
                     },
                     topBar = {
                         Column {
-//                            if (showAppBars) {
-                            Toolbar("")
-//                            }
+                            Toolbar("K-Proxy")
                         }
                     }) { innerPadding ->
                     Surface(
@@ -57,18 +52,17 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding)
                     ) {
                         MainScreen(onConfigurationComplete = {
-                            Toast.makeText(this, "Done: ___", Toast.LENGTH_SHORT).show()
+                            scope.launch {
+                                snackBarHostState.showSnackbar(
+                                    message = "Done: ___", duration = SnackbarDuration.Long
+                                )
+                            }
                         })
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-fun BottomNavigation() {
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
